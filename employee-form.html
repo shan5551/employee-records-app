@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employee Records Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  
+</head>
+<body>
+  <div class="container py-4">
+    <div class="page-card">
+      <h2 class="page-title">Employee Records</h2>
+        <br />  
+      <form id="employeeForm" class="row g-3">
+        <div class="col-md-6">
+          <label for="employeeName" class="form-label">Employee Name</label>
+          <input type="text" class="form-control" id="employeeName" placeholder="John Doe" required />
+        </div>
+
+        <div class="col-md-6">
+          <label for="employeeId" class="form-label">Employee ID</label>
+          <input type="text" class="form-control" id="employeeId" placeholder="EMP-001" required />
+          <div id="employeeIdFeedback" class="invalid-feedback d-block"></div>
+        </div>
+
+        <div class="col-md-6">
+          <label for="designation" class="form-label">Designation</label>
+          <input type="text" class="form-control" id="designation" placeholder="Software Engineer" required />
+        </div>
+
+        <div class="col-md-6">
+          <label for="joiningDate" class="form-label">Joining Date</label>
+          <input type="date" class="form-control" id="joiningDate" required />
+        </div>
+
+        <div class="col-md-6">
+          <label for="basicSalary" class="form-label">Basic Salary</label>
+          <input type="number" class="form-control" id="basicSalary" placeholder="50000" required />
+        </div>
+
+        <div class="col-md-6">
+          <label for="hra" class="form-label">HRA %</label>
+          <input type="number" class="form-control" id="hra" placeholder="20" step="0.01" required />
+        </div>
+
+        <div class="col-md-6">
+          <label for="da" class="form-label">DA %</label>
+          <input type="number" class="form-control" id="da" placeholder="10" step="0.01" required />
+        </div>
+
+        <div class="col-md-6">
+          <label for="otherAllowances" class="form-label">Other Allowances %</label>
+          <input type="number" class="form-control" id="otherAllowances" placeholder="5" step="0.01" required />
+        </div>
+
+        <div class="col-md-6">
+          <label for="esi" class="form-label">ESI %</label>
+          <input type="number" class="form-control" id="esi" placeholder="1.75" step="0.01" required />
+        </div>
+
+        <div class="col-md-6">
+          <label for="pf" class="form-label">PF %</label>
+          <input type="number" class="form-control" id="pf" placeholder="12" step="0.01" required />
+        </div>
+
+        <div class="col-12 d-flex gap-2">
+          <button id="submitButton" type="submit" class="btn btn-primary">Create Record</button>
+          <button type="reset" class="btn btn-outline-secondary">Clear</button>
+        </div>
+      </form>
+
+      <hr class="my-4" />
+
+      <h4 class="mb-3">Existing Employee Records</h4>
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>Employee Name</th>
+              <th>Employee ID</th>
+              <th>Designation</th>
+              <th>Joining Date</th>
+              <th>Basic Salary</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="employeeTableBody">
+            <tr id="emptyStateRow">
+              <td colspan="6" class="text-center text-muted py-4">No employee records yet. Add one above to begin.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="payslip-section mt-4">
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+              <div class="card-body">
+                <h4 class="mb-3">Generate Payslip</h4>
+                <div class="mb-3">
+                  <label for="payslipEmployee" class="form-label">Employee Selection</label>
+                  <select id="payslipEmployee" class="form-select">
+                    <option value="">Select an employee</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="leaveCount" class="form-label">Leave Count for the Month</label>
+                  <input type="number" id="leaveCount" class="form-control" min="0" max="30" value="0" />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Auto-Generated Salary</label>
+                  <div id="salaryPreview" class="form-control bg-light">Select an employee to preview salary.</div>
+                </div>
+
+                <button type="button" id="generatePayslipButton" class="btn btn-primary">Generate Payslip</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div id="payslipPreview" class="payslip-card payslip-print-area">
+              <h5 class="text-center mb-4">Payslip Preview</h5>
+              <p class="text-muted mb-0">Select an employee and leave count to generate a payslip.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="employeeModalLabel">Employee Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="employeeModalBody"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="printablePayslip" class="printable-payslip d-none"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const form = document.getElementById('employeeForm');
+    const tableBody = document.getElementById('employeeTableBody');
+    const submitButton = document.getElementById('submitButton');
+    const modalBody = document.getElementById('employeeModalBody');
+    const employeeModal = new bootstrap.Modal(document.getElementById('employeeModal'));
+    const payslipEmployeeSelect = document.getElementById('payslipEmployee');
+    const leaveCountInput = document.getElementById('leaveCount');
+    const salaryPreview = document.getElementById('salaryPreview');
+    const generatePayslipButton = document.getElementById('generatePayslipButton');
+    const payslipPreview = document.getElementById('payslipPreview');
+    const printablePayslip = document.getElementById('printablePayslip');
+    let editingRow = null;
+    let employeeRecords = [];
+
+    async function loadEmployees() {
+      try {
+        const response = await fetch('/api/employees');
+        const employees = await response.json();
+        employeeRecords = employees;
+        renderEmployeeTable();
+        populatePayslipEmployeeOptions();
+        toggleEmptyState();
+        refreshPayslipDetails();
+      } catch (error) {
+        console.error('Failed to load employees', error);
+      }
+    }
+
+    function renderEmployeeTable() {
+      tableBody.innerHTML = '';
+
+      if (!employeeRecords.length) {
+        tableBody.innerHTML = '<tr id="emptyStateRow"><td colspan="6" class="text-center text-muted py-4">No employee records yet. Add one above to begin.</td></tr>';
+        return;
+      }
+
+      employeeRecords.forEach((employee) => {
+        const row = document.createElement('tr');
+        row.setAttribute('data-employee-id', employee.id);
+        [employee.name, employee.id, employee.designation, employee.joiningDate, formatSalary(employee.salary)].forEach((value) => {
+          const cell = document.createElement('td');
+          cell.textContent = value;
+          row.appendChild(cell);
+        });
+
+        const actionsCell = document.createElement('td');
+        actionsCell.innerHTML = `
+          <button type="button" class="btn btn-sm btn-outline-primary" data-action="view">View</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" data-action="manage">Manage</button>
+        `;
+        row.appendChild(actionsCell);
+        tableBody.appendChild(row);
+      });
+    }
+
+    function formatSalary(value) {
+      const number = Number(value);
+      if (Number.isNaN(number)) {
+        return value;
+      }
+
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(number);
+    }
+
+    function parseSalary(value) {
+      return Number(String(value).replace(/[$,]/g, '').trim()) || 0;
+    }
+
+    function getEmployeeFromForm() {
+      return {
+        name: document.getElementById('employeeName').value.trim(),
+        id: document.getElementById('employeeId').value.trim(),
+        designation: document.getElementById('designation').value.trim(),
+        joiningDate: document.getElementById('joiningDate').value,
+        salary: document.getElementById('basicSalary').value
+      };
+    }
+
+    function populateForm(employee) {
+      document.getElementById('employeeName').value = employee.name;
+      document.getElementById('employeeId').value = employee.id;
+      document.getElementById('designation').value = employee.designation;
+      document.getElementById('joiningDate').value = employee.joiningDate;
+      document.getElementById('basicSalary').value = employee.salary;
+    }
+
+    function resetFormMode() {
+      editingRow = null;
+      submitButton.textContent = 'Create Record';
+      submitButton.classList.remove('btn-success');
+      submitButton.classList.add('btn-primary');
+      clearEmployeeIdError();
+    }
+
+    function clearEmployeeIdError() {
+      const employeeIdInput = document.getElementById('employeeId');
+      const feedback = document.getElementById('employeeIdFeedback');
+      employeeIdInput.classList.remove('is-invalid');
+      feedback.textContent = '';
+    }
+
+    function showEmployeeIdError(message) {
+      const employeeIdInput = document.getElementById('employeeId');
+      const feedback = document.getElementById('employeeIdFeedback');
+      employeeIdInput.classList.add('is-invalid');
+      feedback.textContent = message;
+    }
+
+    function extractEmployeeFromRow(row) {
+      return {
+        name: row.children[0].textContent.trim(),
+        id: row.children[1].textContent.trim(),
+        designation: row.children[2].textContent.trim(),
+        joiningDate: row.children[3].textContent.trim(),
+        salary: parseSalary(row.children[4].textContent)
+      };
+    }
+
+    function toggleEmptyState() {
+      const emptyStateRow = document.getElementById('emptyStateRow');
+      if (emptyStateRow) {
+        emptyStateRow.style.display = employeeRecords.length ? 'none' : '';
+      }
+    }
+
+    function populatePayslipEmployeeOptions() {
+      const previousValue = payslipEmployeeSelect.value;
+      payslipEmployeeSelect.innerHTML = '<option value="">Select an employee</option>';
+
+      employeeRecords.forEach((employee) => {
+        const option = document.createElement('option');
+        option.value = employee.id;
+        option.textContent = `${employee.name} (${employee.id})`;
+        payslipEmployeeSelect.appendChild(option);
+      });
+
+      if (employeeRecords.length) {
+        const hasPreviousSelection = previousValue && employeeRecords.some((employee) => employee.id === previousValue);
+        payslipEmployeeSelect.value = hasPreviousSelection ? previousValue : employeeRecords[0].id;
+      } else {
+        payslipEmployeeSelect.value = '';
+      }
+    }
+
+    function readEmployeeRecords() {
+      employeeRecords = Array.from(tableBody.querySelectorAll('tr'))
+        .filter((row) => row.id !== 'emptyStateRow')
+        .map((row) => extractEmployeeFromRow(row));
+      populatePayslipEmployeeOptions();
+      toggleEmptyState();
+    }
+
+    function calculateAdjustedSalary(employee, leaveCount) {
+      const baseSalary = Number(employee.salary) || 0;
+      const workingDays = 30;
+      const dailySalary = baseSalary / workingDays;
+      return Math.max(baseSalary - (Number(leaveCount) || 0) * dailySalary, 0);
+    }
+
+    function updateSalaryPreview() {
+      const selectedEmployeeId = payslipEmployeeSelect.value;
+      const employee = employeeRecords.find((entry) => entry.id === selectedEmployeeId);
+
+      if (!employee) {
+        salaryPreview.textContent = 'Select an employee to preview salary.';
+        return;
+      }
+
+      const adjustedSalary = calculateAdjustedSalary(employee, leaveCountInput.value);
+      salaryPreview.textContent = formatSalary(adjustedSalary);
+    }
+
+    function buildPayslipMarkup(employee, leaveCount, includePrintButton) {
+      if (!employee) {
+        return `
+          <h5 class="text-center mb-4">Payslip Preview</h5>
+          <p class="text-muted mb-0">Select an employee and leave count to generate a payslip.</p>
+        `;
+      }
+
+      const adjustedSalary = calculateAdjustedSalary(employee, leaveCount);
+      const deduction = (Number(employee.salary) || 0) - adjustedSalary;
+      const monthLabel = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
+      const printButtonMarkup = includePrintButton
+        ? `<div class="mt-4 d-flex gap-2"><button type="button" id="printPayslipButton" class="btn btn-outline-dark">Print Payslip</button></div>`
+        : '';
+
+      return `
+        <h5 class="text-center mb-4">Payslip Preview</h5>
+        <div class="payslip-header">
+          <div><strong>Employee:</strong> ${employee.name}</div>
+          <div><strong>ID:</strong> ${employee.id}</div>
+          <div><strong>Designation:</strong> ${employee.designation}</div>
+        </div>
+        <hr />
+        <div class="row g-2">
+          <div class="col-6"><strong>Month:</strong></div>
+          <div class="col-6">${monthLabel}</div>
+          <div class="col-6"><strong>Leave Count:</strong></div>
+          <div class="col-6">${leaveCount}</div>
+          <div class="col-6"><strong>Basic Salary:</strong></div>
+          <div class="col-6">${formatSalary(employee.salary)}</div>
+          <div class="col-6"><strong>Leave Deduction:</strong></div>
+          <div class="col-6">${formatSalary(deduction)}</div>
+          <div class="col-6"><strong>Net Salary:</strong></div>
+          <div class="col-6"><strong>${formatSalary(adjustedSalary)}</strong></div>
+        </div>
+        ${printButtonMarkup}
+      `;
+    }
+
+    function renderPayslip(employee, leaveCount) {
+      const previewMarkup = buildPayslipMarkup(employee, leaveCount, true);
+      const printMarkup = buildPayslipMarkup(employee, leaveCount, false);
+      payslipPreview.innerHTML = previewMarkup;
+      printablePayslip.innerHTML = printMarkup;
+
+      const printButton = document.getElementById('printPayslipButton');
+      if (printButton) {
+        printButton.addEventListener('click', function () {
+          window.print();
+        });
+      }
+    }
+
+    function refreshPayslipDetails() {
+      updateSalaryPreview();
+      const selectedEmployeeId = payslipEmployeeSelect.value;
+      const employee = employeeRecords.find((entry) => entry.id === selectedEmployeeId);
+      renderPayslip(employee, leaveCountInput.value);
+    }
+
+    async function saveEmployee(employee) {
+      try {
+        const response = await fetch('/api/employees', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...employee, salary: parseSalary(employee.salary), mode: editingRow ? 'update' : 'create' })
+        });
+
+        const result = await response.json();
+        if (!result.success) {
+          showEmployeeIdError(result.message || 'Save failed');
+          return { success: false, message: result.message };
+        }
+
+        await loadEmployees();
+        return { success: true };
+      } catch (error) {
+        console.error('Failed to save employee', error);
+        showEmployeeIdError('Failed to save employee.');
+        return { success: false, message: error.message };
+      }
+    }
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const employee = getEmployeeFromForm();
+
+      if (!employee.name || !employee.id || !employee.designation || !employee.joiningDate || !employee.salary) {
+        return;
+      }
+
+      const existingRecord = employeeRecords.find((record) => record.id === employee.id);
+      const isDuplicateId = Boolean(existingRecord) && !editingRow;
+
+      if (isDuplicateId) {
+        showEmployeeIdError('Employee ID already exists. Use a different ID for a new record.');
+        document.getElementById('employeeId').focus();
+        return;
+      }
+
+      clearEmployeeIdError();
+
+      const saved = await saveEmployee(employee);
+      if (!saved.success) {
+        return;
+      }
+
+      form.reset();
+      resetFormMode();
+      document.getElementById('employeeName').focus();
+    });
+
+    form.addEventListener('reset', function () {
+      resetFormMode();
+    });
+
+    document.getElementById('employeeId').addEventListener('input', clearEmployeeIdError);
+
+    tableBody.addEventListener('click', function (event) {
+      const button = event.target.closest('button[data-action]');
+      if (!button) {
+        return;
+      }
+
+      const row = button.closest('tr');
+      if (!row) {
+        return;
+      }
+
+      const employee = {
+        name: row.children[0].textContent.trim(),
+        id: row.children[1].textContent.trim(),
+        designation: row.children[2].textContent.trim(),
+        joiningDate: row.children[3].textContent.trim(),
+        salary: row.children[4].textContent.replace(/[$,]/g, '').trim()
+      };
+
+      if (button.dataset.action === 'view') {
+        modalBody.innerHTML = `
+          <p><strong>Name:</strong> ${employee.name}</p>
+          <p><strong>ID:</strong> ${employee.id}</p>
+          <p><strong>Designation:</strong> ${employee.designation}</p>
+          <p><strong>Joining Date:</strong> ${employee.joiningDate}</p>
+          <p><strong>Basic Salary:</strong> ${formatSalary(employee.salary)}</p>
+        `;
+        employeeModal.show();
+      } else if (button.dataset.action === 'manage') {
+        clearEmployeeIdError();
+        populateForm(employee);
+        editingRow = row;
+        submitButton.textContent = 'Update Record';
+        submitButton.classList.remove('btn-primary');
+        submitButton.classList.add('btn-success');
+        document.getElementById('employeeName').focus();
+      }
+    });
+
+    payslipEmployeeSelect.addEventListener('change', refreshPayslipDetails);
+    leaveCountInput.addEventListener('input', refreshPayslipDetails);
+    generatePayslipButton.addEventListener('click', refreshPayslipDetails);
+
+    loadEmployees();
+  </script>
+</body>
+</html>

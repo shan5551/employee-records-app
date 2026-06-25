@@ -1,0 +1,82 @@
+body {
+  background: linear-gradient(135deg, #bed7f8 0%, #eef3ff 100%);
+  min-height: 100vh;
+}
+
+.page-card {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.page-title {
+  color: rgb(71, 71, 122);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.page-subtitle {
+  color: #6c757d;
+  margin-bottom: 24px;
+}
+
+.payslip-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+  border: 1px solid #dfe7ff;
+  border-radius: 16px;
+  padding: 24px;
+  min-height: 280px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.payslip-card h5 {
+  color: rgb(71, 71, 122);
+  font-weight: 700;
+}
+
+.payslip-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+  color: #334155;
+}
+
+.printable-payslip {
+  display: none;
+}
+
+@media print {
+  body {
+    background: #fff;
+    margin: 0;
+    padding: 0;
+  }
+
+  .page-card {
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    max-width: none;
+  }
+
+  .page-card > :not(.printable-payslip) {
+    display: none !important;
+  }
+
+  .payslip-print-area {
+    display: none !important;
+  }
+
+  .printable-payslip {
+    display: block !important;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: none;
+    background: #fff;
+  }
+}
