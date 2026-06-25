@@ -1,0 +1,24 @@
+[
+  {
+    "name": "shan",
+    "id": "emp001",
+    "designation": "swd",
+    "joiningDate": "2026-06-01",
+    "salary": 12345,
+    "mode": "create"
+  },
+  {
+    "name": "shahlan",
+    "id": "emp002",
+    "designation": "swd",
+    "joiningDate": "2025-01-26",
+    "salary": 450000
+  },
+  {
+    "name": "shahlan",
+    "id": "emp003",
+    "designation": "swd",
+    "joiningDate": "2026-06-06",
+    "salary": 50000
+  }
+]
